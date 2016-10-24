@@ -16,7 +16,7 @@ Pod::Spec.new do |s|
                        DESC
   s.homepage = "#{url}/tree/#{tag}/objc"
   s.source = { :git => "#{url}.git", :tag => tag }
-  s.source_files = "objc/lib/**/*.{h,m}"
+  s.source_files = "lib/**/*.{h,m}"
   s.author = { "Twitter, Inc." => "opensource@twitter.com" }
   s.ios.deployment_target = "4.0"
   s.osx.deployment_target = "10.7"
