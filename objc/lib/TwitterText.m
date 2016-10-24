@@ -1,7 +1,7 @@
 //
 //  TwitterText.m
 //
-//  Copyright 2012-2014 Twitter, Inc.
+//  Copyright 2012-2016 Twitter, Inc.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -315,25 +315,25 @@ static const NSUInteger HTTPSShortURLLength = 23;
 
 #pragma mark - Public Methods
 
-+ (NSArray *)entitiesInText:(NSString *)text
++ (TwitterTextEntityArray *)entitiesInText:(NSString *)text
 {
     if (!text.length) {
-        return [NSArray array];
+        return [TwitterTextEntityArray array];
     }
 
-    NSMutableArray *results = [NSMutableArray array];
+    TwitterTextMutableEntityArray *results = [TwitterTextMutableEntityArray array];
 
-    NSArray *urls = [self URLsInText:text];
+    TwitterTextEntityArray *urls = [self URLsInText:text];
     [results addObjectsFromArray:urls];
 
-    NSArray *hashtags = [self hashtagsInText:text withURLEntities:urls];
+    TwitterTextEntityArray *hashtags = [self hashtagsInText:text withURLEntities:urls];
     [results addObjectsFromArray:hashtags];
 
-    NSArray *symbols = [self symbolsInText:text withURLEntities:urls];
+    TwitterTextEntityArray *symbols = [self symbolsInText:text withURLEntities:urls];
     [results addObjectsFromArray:symbols];
 
-    NSArray *mentionsAndLists = [self mentionsOrListsInText:text];
-    NSMutableArray *addingItems = [NSMutableArray array];
+    TwitterTextEntityArray *mentionsAndLists = [self mentionsOrListsInText:text];
+    TwitterTextMutableEntityArray *addingItems = [TwitterTextMutableEntityArray array];
 
     for (TwitterTextEntity *entity in mentionsAndLists) {
         NSRange entityRange = entity.range;
@@ -355,13 +355,13 @@ static const NSUInteger HTTPSShortURLLength = 23;
     return results;
 }
 
-+ (NSArray *)URLsInText:(NSString *)text
++ (TwitterTextEntityArray *)URLsInText:(NSString *)text
 {
     if (!text.length) {
-        return [NSArray array];
+        return [TwitterTextEntityArray array];
     }
 
-    NSMutableArray *results = [NSMutableArray array];
+    TwitterTextMutableEntityArray *results = [TwitterTextMutableEntityArray array];
     NSUInteger len = text.length;
     NSUInteger position = 0;
     NSRange allRange = NSMakeRange(0, 0);
@@ -456,26 +456,26 @@ static const NSUInteger HTTPSShortURLLength = 23;
     return results;
 }
 
-+ (NSArray *)hashtagsInText:(NSString *)text checkingURLOverlap:(BOOL)checkingURLOverlap
++ (TwitterTextEntityArray *)hashtagsInText:(NSString *)text checkingURLOverlap:(BOOL)checkingURLOverlap
 {
     if (!text.length) {
-        return [NSArray array];
+        return [TwitterTextEntityArray array];
     }
 
-    NSArray *urls = nil;
+    TwitterTextEntityArray *urls = nil;
     if (checkingURLOverlap) {
         urls = [self URLsInText:text];
     }
     return [self hashtagsInText:text withURLEntities:urls];
 }
 
-+ (NSArray *)hashtagsInText:(NSString *)text withURLEntities:(NSArray *)urlEntities
++ (TwitterTextEntityArray *)hashtagsInText:(NSString *)text withURLEntities:(TwitterTextEntityArray *)urlEntities
 {
     if (!text.length) {
-        return [NSArray array];
+        return [TwitterTextEntityArray array];
     }
 
-    NSMutableArray *results = [NSMutableArray array];
+    TwitterTextMutableEntityArray *results = [TwitterTextMutableEntityArray array];
     NSUInteger len = text.length;
     NSUInteger position = 0;
 
@@ -517,26 +517,26 @@ static const NSUInteger HTTPSShortURLLength = 23;
     return results;
 }
 
-+ (NSArray *)symbolsInText:(NSString *)text checkingURLOverlap:(BOOL)checkingURLOverlap
++ (TwitterTextEntityArray *)symbolsInText:(NSString *)text checkingURLOverlap:(BOOL)checkingURLOverlap
 {
     if (!text.length) {
-        return [NSArray array];
+        return [TwitterTextEntityArray array];
     }
 
-    NSArray *urls = nil;
+    TwitterTextEntityArray *urls = nil;
     if (checkingURLOverlap) {
         urls = [self URLsInText:text];
     }
     return [self symbolsInText:text withURLEntities:urls];
 }
 
-+ (NSArray *)symbolsInText:(NSString *)text withURLEntities:(NSArray *)urlEntities
++ (TwitterTextEntityArray *)symbolsInText:(NSString *)text withURLEntities:(TwitterTextEntityArray *)urlEntities
 {
     if (!text.length) {
-        return [NSArray array];
+        return [TwitterTextEntityArray array];
     }
 
-    NSMutableArray *results = [NSMutableArray array];
+    TwitterTextMutableEntityArray *results = [TwitterTextMutableEntityArray array];
     NSUInteger len = text.length;
     NSUInteger position = 0;
 
@@ -568,14 +568,14 @@ static const NSUInteger HTTPSShortURLLength = 23;
     return results;
 }
 
-+ (NSArray *)mentionedScreenNamesInText:(NSString *)text
++ (TwitterTextEntityArray *)mentionedScreenNamesInText:(NSString *)text
 {
     if (!text.length) {
-        return [NSArray array];
+        return [TwitterTextEntityArray array];
     }
 
-    NSArray *mentionsOrLists = [self mentionsOrListsInText:text];
-    NSMutableArray *results = [NSMutableArray array];
+    TwitterTextEntityArray *mentionsOrLists = [self mentionsOrListsInText:text];
+    TwitterTextMutableEntityArray *results = [TwitterTextMutableEntityArray array];
 
     for (TwitterTextEntity *entity in mentionsOrLists) {
         if (entity.type == TwitterTextEntityScreenName) {
@@ -586,13 +586,13 @@ static const NSUInteger HTTPSShortURLLength = 23;
     return results;
 }
 
-+ (NSArray *)mentionsOrListsInText:(NSString *)text
++ (TwitterTextEntityArray *)mentionsOrListsInText:(NSString *)text
 {
     if (!text.length) {
-        return [NSArray array];
+        return [TwitterTextEntityArray array];
     }
 
-    NSMutableArray *results = [NSMutableArray array];
+    TwitterTextMutableEntityArray *results = [TwitterTextMutableEntityArray array];
     NSUInteger len = text.length;
     NSUInteger position = 0;
 
@@ -696,7 +696,7 @@ static NSCharacterSet *validHashtagBoundaryCharacterSet()
 #endif
 
     NSUInteger urlLengthOffset = 0;
-    NSArray *urlEntities = [self URLsInText:text];
+    TwitterTextEntityArray *urlEntities = [self URLsInText:text];
     for (NSInteger i = (NSInteger)urlEntities.count - 1; i >= 0; i--) {
         TwitterTextEntity *entity = [urlEntities objectAtIndex:(NSUInteger)i];
         NSRange urlRange = entity.range;
@@ -746,7 +746,7 @@ static NSCharacterSet *validHashtagBoundaryCharacterSet()
 
 #pragma mark - Private Methods
 
-+ (NSRegularExpression*)simplifiedValidURLRegexp
++ (NSRegularExpression *)simplifiedValidURLRegexp
 {
     static NSRegularExpression *regexp;
     static dispatch_once_t onceToken;
@@ -756,7 +756,7 @@ static NSCharacterSet *validHashtagBoundaryCharacterSet()
     return regexp;
 }
 
-+ (NSRegularExpression*)URLRegexpForValidation
++ (NSRegularExpression *)URLRegexpForValidation
 {
     static NSRegularExpression *regexp;
     static dispatch_once_t onceToken;
@@ -766,7 +766,7 @@ static NSCharacterSet *validHashtagBoundaryCharacterSet()
     return regexp;
 }
 
-+ (NSRegularExpression*)validASCIIDomainRegexp
++ (NSRegularExpression *)validASCIIDomainRegexp
 {
     static NSRegularExpression *regexp;
     static dispatch_once_t onceToken;
@@ -776,7 +776,7 @@ static NSCharacterSet *validHashtagBoundaryCharacterSet()
     return regexp;
 }
 
-+ (NSRegularExpression*)invalidShortDomainRegexp
++ (NSRegularExpression *)invalidShortDomainRegexp
 {
     static NSRegularExpression *regexp;
     static dispatch_once_t onceToken;
@@ -786,7 +786,7 @@ static NSCharacterSet *validHashtagBoundaryCharacterSet()
     return regexp;
 }
 
-+ (NSRegularExpression*)validSpecialShortDomainRegexp
++ (NSRegularExpression *)validSpecialShortDomainRegexp
 {
     static NSRegularExpression *regexp;
     static dispatch_once_t onceToken;
@@ -796,7 +796,7 @@ static NSCharacterSet *validHashtagBoundaryCharacterSet()
     return regexp;
 }
 
-+ (NSRegularExpression*)validTCOURLRegexp
++ (NSRegularExpression *)validTCOURLRegexp
 {
     static NSRegularExpression *regexp;
     static dispatch_once_t onceToken;
@@ -806,7 +806,7 @@ static NSCharacterSet *validHashtagBoundaryCharacterSet()
     return regexp;
 }
 
-+ (NSRegularExpression*)validHashtagRegexp
++ (NSRegularExpression *)validHashtagRegexp
 {
     static NSRegularExpression *regexp;
     static dispatch_once_t onceToken;
@@ -816,7 +816,7 @@ static NSCharacterSet *validHashtagBoundaryCharacterSet()
     return regexp;
 }
 
-+ (NSRegularExpression*)endHashtagRegexp
++ (NSRegularExpression *)endHashtagRegexp
 {
     static NSRegularExpression *regexp;
     static dispatch_once_t onceToken;
@@ -826,7 +826,7 @@ static NSCharacterSet *validHashtagBoundaryCharacterSet()
     return regexp;
 }
 
-+ (NSRegularExpression*)validSymbolRegexp
++ (NSRegularExpression *)validSymbolRegexp
 {
     static NSRegularExpression *regexp;
     static dispatch_once_t onceToken;
@@ -836,7 +836,7 @@ static NSCharacterSet *validHashtagBoundaryCharacterSet()
     return regexp;
 }
 
-+ (NSRegularExpression*)validMentionOrListRegexp
++ (NSRegularExpression *)validMentionOrListRegexp
 {
     static NSRegularExpression *regexp;
     static dispatch_once_t onceToken;
@@ -846,7 +846,7 @@ static NSCharacterSet *validHashtagBoundaryCharacterSet()
     return regexp;
 }
 
-+ (NSRegularExpression*)validReplyRegexp
++ (NSRegularExpression *)validReplyRegexp
 {
     static NSRegularExpression *regexp;
     static dispatch_once_t onceToken;
@@ -856,7 +856,7 @@ static NSCharacterSet *validHashtagBoundaryCharacterSet()
     return regexp;
 }
 
-+ (NSRegularExpression*)endMentionRegexp
++ (NSRegularExpression *)endMentionRegexp
 {
     static NSRegularExpression *regexp;
     static dispatch_once_t onceToken;
@@ -866,7 +866,7 @@ static NSCharacterSet *validHashtagBoundaryCharacterSet()
     return regexp;
 }
 
-+ (NSCharacterSet*)invalidURLWithoutProtocolPrecedingCharSet
++ (NSCharacterSet *)invalidURLWithoutProtocolPrecedingCharSet
 {
     static NSCharacterSet *charSet;
     static dispatch_once_t onceToken;
@@ -879,7 +879,7 @@ static NSCharacterSet *validHashtagBoundaryCharacterSet()
     return charSet;
 }
 
-+ (NSRegularExpression*)validDomainSucceedingCharRegexp
++ (NSRegularExpression *)validDomainSucceedingCharRegexp
 {
     static NSRegularExpression *regexp;
     static dispatch_once_t onceToken;
